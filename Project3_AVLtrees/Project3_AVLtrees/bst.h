@@ -150,7 +150,7 @@ namespace PB_BST
 		int getNumberOfNodes(node<T>* np) const;
 		~bst(){delTree(root);}
 	protected:
-	  	void insert(T d, node<T>* &cur);
+	  	bool insert(T d, node<T>* &cur);
 		node<T>* root; // root of this tree
 		node<T>** parentptr; // holding pointer needed by some functions
 
@@ -232,8 +232,7 @@ namespace PB_BST
 	template <class T>
 	bool bst<T>::insert(T d)
 	{
-
-		insert(d, root);
+		return insert(d, root);
 	}
 	//--------------------------------------------------------------------
 	// inserts a new element
@@ -241,7 +240,7 @@ namespace PB_BST
 	// throws bad_alloc
 	//--------------------------------------------------------------------
 	template <class T>
-	void bst<T>::insert(T d, node<T>* &cur)
+	bool bst<T>::insert(T d, node<T>* &cur)
 	{
 		if(cur == nullptr)
 		{                       
@@ -251,13 +250,16 @@ namespace PB_BST
 		}
 		else
 		{
-			if(d < cur->value())
+			if (d < cur->value())
 				insert(d, cur->left);
-			else
+			else if (d > cur->value())
 				insert(d, cur->right);
+			else
+				return false;
 			if(root != nullptr)
 				root->setHeight();
 		}
+		return true;
 	} 
 
 	//-------------------------------------------------------------------- 
