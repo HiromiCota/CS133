@@ -193,7 +193,23 @@ namespace PB_BST
 	template<class T>
 	node<T>* avl<T>::rebalance(node<T> *&nodeN)
 	{
-		
+		nodeN->setHeight();	//Make sure height data is correct before proceding
+		if (getHeightDifference(nodeN) == 2)	//Right imbalance block
+		{
+			if (getHeightDifference(nodeN->right) < 0)
+				return rotateRightLeft(nodeN);	//Right-Left
+			else
+				return rotateRight(nodeN);		//Right
+		}//end Right Imbalances
+		else if (getHeightDifference(nodeN) == -2)	//Left imbalance
+		{
+			if (getHeightDifference(nodeN->left) > 0)
+				return rotateLeftRight(nodeN);	//Left-Right
+			else
+				return rotateLeft(nodeN);		//Left
+		}//end Left Imbalances
+		else
+			return nodeN;						//Balance not required
 	}
 	//--------------------------------------------------------------------
 	// Determines if imbalance is present
@@ -201,7 +217,7 @@ namespace PB_BST
 	template<class T>
 	int avl<T>::getHeightDifference(const node<T> *const nodeN)const
 	{
-		
+		return (nodeN->right->getHeight() - nodeN->left->getHeight());
 	}
 }
 #endif
