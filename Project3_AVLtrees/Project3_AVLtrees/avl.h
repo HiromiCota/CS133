@@ -91,6 +91,117 @@ namespace PB_BST
 		node<T>* rebalance(node<T> *&nodeN);
 		int getHeightDifference(const node<T> *const nodeN)const;
 	};
-
+	//--------------------------------------------------------------------
+	// overloaded =
+	// throws bad_alloc
+	// Returns reference to *this
+	//--------------------------------------------------------------------
+	template<class T>
+	avl<T>& avl<T>::operator=(const avl<T>& t)
+	{
+	}
+	//--------------------------------------------------------------------
+	// overloaded +=
+	// throws bad_alloc
+	// Returns reference of *this
+	//--------------------------------------------------------------------
+	template<class T>
+	avl<T>& avl<T>::operator+=(const avl<T>& t)
+	{
+	}
+	//--------------------------------------------------------------------
+	// Insert new node - triggers rebalance()
+	// Returns true if insert successful.
+	// Returns false if node already present in tree
+	//--------------------------------------------------------------------
+	template<class T>
+	bool avl<T>::insert(T d, node<T>* &cur)
+	{
+		
+	}
+	//--------------------------------------------------------------------
+	// Pops and returns target node.
+	//--------------------------------------------------------------------
+	template<class T>
+	T avl<T>::popnode(node<T>* &cur)
+	{
+		
+	}
+	//--------------------------------------------------------------------
+	// Pops and returns lowest node in tree
+	//--------------------------------------------------------------------
+	template<class T>
+	T avl<T>::poplow(node<T>* &cur)
+	{
+		
+	}
+	//--------------------------------------------------------------------
+	// Pops and returns first node that matches arg T& d
+	//--------------------------------------------------------------------
+	template<class T>
+	T avl<T>::popfirst(const T& d, node<T>* np)
+	{
+		
+	}
+	//--------------------------------------------------------------------
+	// Rotates (sub)tree right
+	// Returns pointer to new tree root (was left child)
+	//--------------------------------------------------------------------
+	template<class T>
+	node<T>* avl<T>::rotateRight(node<T> *nodeN)
+	{
+		node<T> *nodeO = nodeN->left;
+		nodeN->left = nodeO->right;
+		nodeO->right = nodeN;
+		nodeN->setHeight();
+		nodeO->setHeight();
+		return *nodeO;
+	}
+	//--------------------------------------------------------------------
+	// Rotates (sub)tree left
+	//--------------------------------------------------------------------
+	template<class T>
+	node<T>* avl<T>::rotateLeft(node<T> *nodeN)
+	{
+		node<T> *nodeO = nodeN->right;
+		nodeN->right = nodeO->left ;
+		nodeO->left = nodeN;
+		nodeN->setHeight();
+		nodeO->setHeight();
+		return *nodeO;		
+	}
+	//--------------------------------------------------------------------
+	// Rotates (sub)tree Right, then Left
+	//--------------------------------------------------------------------
+	template<class T>
+	node<T>* avl<T>::rotateRightLeft(node<T> *nodeN)
+	{
+		nodeN->right = rotateRight(nodeN);
+		return rotateLeft(nodeN);
+	}
+	//--------------------------------------------------------------------
+	// Rotates (sub)tree Left, then Right
+	//--------------------------------------------------------------------
+	template<class T>
+	node<T>* avl<T>::rotateLeftRight(node<T> *nodeN)
+	{
+		nodeN->left = rotateLeft(nodeN);
+		return rotateRight(nodeN);
+	}//--------------------------------------------------------------------
+	// Determines what sort of imbalance is present, then calls appropriate algorithm
+	//--------------------------------------------------------------------
+	template<class T>
+	node<T>* avl<T>::rebalance(node<T> *&nodeN)
+	{
+		
+	}
+	//--------------------------------------------------------------------
+	// Determines if imbalance is present
+	//--------------------------------------------------------------------
+	template<class T>
+	int avl<T>::getHeightDifference(const node<T> *const nodeN)const
+	{
+		
+	}
 }
 #endif
