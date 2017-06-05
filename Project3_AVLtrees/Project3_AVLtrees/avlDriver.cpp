@@ -20,7 +20,7 @@ int main()
 		avl<char> tree;
 		node<char>* marker = nullptr;
 		char c;
-		cout << "Enter charcacters, followed by <Enter>.\n";
+		cout << "Enter characters, followed by <Enter>.\n";
 		do
 		{
 			cin.get(c);

@@ -173,6 +173,7 @@ namespace PB_BST
 		nodeO->right = nodeN;
 		nodeN->setHeight();
 		nodeO->setHeight();
+		root = nodeO;
 		return nodeO;
 	}
 	//--------------------------------------------------------------------
@@ -216,16 +217,16 @@ namespace PB_BST
 		if (getHeightDifference(nodeN) == 2)	//Right imbalance block
 		{
 			if (getHeightDifference(nodeN->right) < 0)
-				return rotateRightLeft(nodeN);	//Right-Left
+				return rotateLeftRight(nodeN);	//Right-Left
 			else
-				return rotateRight(nodeN);		//Right
+				return rotateLeft(nodeN);		//Right
 		}//end Right Imbalances
 		else if (getHeightDifference(nodeN) == -2)	//Left imbalance
 		{
 			if (getHeightDifference(nodeN->left) > 0)
-				return rotateLeftRight(nodeN);	//Left-Right
+				return rotateRightLeft(nodeN);	//Left-Right
 			else
-				return rotateLeft(nodeN);		//Left
+				return rotateRight(nodeN);		//Left
 		}//end Left Imbalances
 		else
 			return nodeN;						//Balance not required
@@ -236,7 +237,15 @@ namespace PB_BST
 	template<class T>
 	int avl<T>::getHeightDifference(const node<T> *const nodeN)const
 	{
-		return (nodeN->right->getHeight() - nodeN->left->getHeight());
+		if (nodeN->right != nullptr)
+			if (nodeN->left != nullptr)
+				return (nodeN->right->getHeight() - nodeN->left->getHeight());
+			else
+				return (nodeN->right->getHeight());
+		else if (nodeN->left != nullptr)
+			return (nodeN->left->getHeight());
+		else
+			return 0;
 	}
 	////--------------------------------------------------------------------
 	//// Recursively deletes out the subtree
