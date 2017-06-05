@@ -11,7 +11,7 @@ using namespace std;
 // revised April, 2005
 // revised June, 2015
 //--------------------------------------------------------------------
-int main(void)
+int notmain(void)
 {
 	using PB_BST::bst;
 	using PB_BST::node;

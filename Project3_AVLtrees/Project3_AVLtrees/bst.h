@@ -122,19 +122,19 @@ namespace PB_BST
 
 	  	bool isempty() const {return (root == nullptr);}
 	  
-		bst<T>& operator=(const bst<T>& t);
-		bst<T>& operator+=(const bst<T>& t);
-		bst<T>& operator+=(const T d){insert(d, root); return *this;}
-	 	bst<T> operator+(const T d) {bst<T> temp = *this;
+		virtual bst<T>& operator=(const bst<T>& t);
+		virtual bst<T>& operator+=(const bst<T>& t);
+		virtual bst<T>& operator+=(const T d){insert(d, root); return *this;}
+	 	virtual bst<T>& operator+(const T d) {bst<T> temp = *this;
 			temp.insert(d, temp.root); return temp;}  
 	  	void findFirstOf(const T& d, node<T>* &np, node<T>* &match);
-	  	bool insert(T d);
-		void delTree() {delTree(root);}
+	  	virtual bool insert(T d);
+		virtual void delTree() {delTree(root);}
 		void print(ostream& out)const {print(root, out);}
 		void print(node<T>* cur, ostream& out) const;
 		void printXlevel(ostream& out) const {printXlevel(root, out);}
 		void printXlevel(node<T>* cur, ostream& out) const;
-		void print(node<T>* cur, ostream& out, int level2print) const;
+		//void print(node<T>* cur, ostream& out, int level2print) const;
 		T popNode(node<T>* &cur);
 		T popLow(node<T>* &cur);
 		T popHigh(node<T>* &cur);
@@ -148,15 +148,15 @@ namespace PB_BST
             int level2print, int position = 0) const;
 		int getNumberOfNodes() const {return getNumberOfNodes(root);}
 		int getNumberOfNodes(node<T>* np) const;
-		~bst(){delTree(root);}
+		virtual	~bst(){delTree(root);}
 	protected:
-	  	bool insert(T d, node<T>* &cur);
+	  	virtual bool insert(T d, node<T>* &cur);
 		node<T>* root; // root of this tree
 		node<T>** parentptr; // holding pointer needed by some functions
 
 		void addTree(const node<T>* np); // used by +
 	private:
-		void delTree(node<T>* &cur);
+		virtual void delTree(node<T>* &cur);
 	}; 
 
 	//--------------------------------------------------------------------
