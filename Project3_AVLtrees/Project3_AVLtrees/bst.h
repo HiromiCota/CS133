@@ -96,6 +96,8 @@ namespace PB_BST
 	template <class T>
 	int node<T>::setHeight()
 	{
+		if (this == nullptr)
+			return 0;
 		int lHeight = 0;
 		int rHeight = 0;
 		m_height = 1;
@@ -198,7 +200,7 @@ namespace PB_BST
 		{
 			addTree(np->left);
 			addTree(np->right);
-			insert(np->value(), root);
+			insert(np->value());
 		}
 	}
 
@@ -242,7 +244,7 @@ namespace PB_BST
 	bool bst<T>::insert(T d, node<T>* &cur)
 	{
 		if(cur == nullptr)
-		{                       
+		{   
 			cur = new node<T>(d);
 			if(isempty())
 				root = cur;
@@ -386,7 +388,7 @@ namespace PB_BST
 		{ // two children
 			cur->setdata(popHigh(cur->left));
 			// pops leftmost node of right child and
-			// places that value into the current node
+			// places that value into the current node			
 		}
 		if(root != nullptr)
 			root->setHeight();

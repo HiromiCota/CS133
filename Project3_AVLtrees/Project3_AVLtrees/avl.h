@@ -49,7 +49,7 @@ namespace PB_BST
 //			avl<T>& operator=(const avl<T>& t) -- deep copy
 //			avl<T>& operator+=(const avl<T>& t) -- adds an element to the tree
 //			void insert(T d, node<T>* &cur) -- adds an element to the tree
-//			T popnode(node<T>* &cur) -- returns element in node deleted
+//			T popNode(node<T>* &cur) -- returns element in node deleted
 //			T poplow(node<T>* &cur) -- returns element in leftmost node (deleted)
 //			T popfirst(const T& d, node<T>* np)
 //				-- returns element in first node matching d (deleted)
@@ -79,7 +79,9 @@ namespace PB_BST
 		{avl<T> temp = *this; temp.insert(d); return temp;}
 		bool insert(T d) { return insert(d, root);}
 		bool insert(T d, node<T>* &cur);
-		T popnode(node<T>* &cur);
+		bool isempty() { return bst<T>::isempty(); }
+		bool isempty() const { return bst<T>::isempty(); }
+		T popNode(node<T>* &cur);
 		T poplow(node<T>* &cur);
 		T popfirst(const T& d, node<T>* np);				
 		node<T>* getRoot() const { return bst<T>::root; }
@@ -104,7 +106,16 @@ namespace PB_BST
 	template<class T>
 	avl<T>& avl<T>::operator=(const avl<T>& t)
 	{			
-		return (bst<T>::operator=(t));
+		if(this != &t)
+		{
+			if (!isempty())
+				deltree();
+			if(!t.isempty())
+			{
+				bst<T>::root = new node<T>(*(t.getRoot()));
+			}
+		}
+		return *this;
 	}
 	//--------------------------------------------------------------------
 	// overloaded +=
@@ -128,7 +139,7 @@ namespace PB_BST
 		{
 			addTree(np->left);
 			addTree(np->right);
-			insert(np->value(), bst<T>::root);
+			insert(np->value());
 		}
 	}
 	//--------------------------------------------------------------------
@@ -153,9 +164,9 @@ namespace PB_BST
 	// Pops and returns target node.
 	//--------------------------------------------------------------------
 	template<class T>
-	T avl<T>::popnode(node<T>* &cur)
+	T avl<T>::popNode(node<T>* &cur)
 	{
-		T contents = bst<T>::popNode(&cur);
+		T contents = bst<T>::popNode(cur);
 		if (cur != nullptr)
 			rebalance(cur);
 		bst<T>::root->setHeight();
@@ -198,9 +209,11 @@ namespace PB_BST
 		if (nodeN->left->right != nullptr)
 			orphan = nodeN->left->right;
 		
-		nodeN->setdata(nodeN->left->value());	//N has correct data and child
+		nodeN->setdata(child->value());	//N has correct data and child
 		if (child->left != nullptr)
 			nodeN->left = child->left;
+		else
+			nodeN->left = nullptr;
 
 		nodeN->right = child;
 		child->setdata(value);	//N->r right now has correct data
@@ -209,16 +222,6 @@ namespace PB_BST
 				
 		nodeN->setHeight();
 		return nodeN;
-
-		/*node<T>* temp = nodeN->left;
-		node<T>* orphan = temp->right;
-		temp->right = nodeN;
-		nodeN->left = orphan;		
-
-		if (bst<T>::root == nodeN)
-			bst<T>::root = temp;
-		bst<T>::root->setHeight();		
-		return temp;*/
 	}
 	//--------------------------------------------------------------------
 	// Rotates (sub)tree left
@@ -233,9 +236,11 @@ namespace PB_BST
 		if (nodeN->right->left != nullptr)
 			orphan = nodeN->right->left;
 
-		nodeN->setdata(nodeN->right->value());	//N has correct data and child
+		nodeN->setdata(child->value());	//N has correct data and child
 		if (child->right != nullptr)
 			nodeN->right = child->right;
+		else
+			nodeN->right = nullptr;
 
 		nodeN->left = child;
 		child->setdata(value);	//N->r right now has correct data
@@ -244,16 +249,6 @@ namespace PB_BST
 
 		nodeN->setHeight();
 		return nodeN;
-
-		/*node<T>* temp = nodeN->right;
-		node<T>* orphan = temp->left;
-		temp->left = nodeN;
-		nodeN->right = orphan;		
-
-		if (bst<T>::root == nodeN)
-			bst<T>::root = temp;
-		bst<T>::root->setHeight();		
-		return temp;		*/
 	}
 	//--------------------------------------------------------------------
 	// Rotates (sub)tree Right, then Left
