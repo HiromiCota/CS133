@@ -11,7 +11,7 @@ using namespace std;
 // 4 JUN 2017
 //--------------------------------------------------------------------
 
-int main()
+int notmain()
 {
 	using PB_BST::avl;
 	using PB_BST::node;

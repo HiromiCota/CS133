@@ -133,8 +133,7 @@ namespace PB_BST
 		void print(ostream& out)const {print(root, out);}
 		void print(node<T>* cur, ostream& out) const;
 		void printXlevel(ostream& out) const {printXlevel(root, out);}
-		void printXlevel(node<T>* cur, ostream& out) const;
-		//void print(node<T>* cur, ostream& out, int level2print) const;
+		void printXlevel(node<T>* cur, ostream& out) const;		
 		T popNode(node<T>* &cur);
 		T popLow(node<T>* &cur);
 		T popHigh(node<T>* &cur);
@@ -154,7 +153,7 @@ namespace PB_BST
 		node<T>* root; // root of this tree
 		node<T>** parentptr; // holding pointer needed by some functions
 
-		void addTree(const node<T>* np); // used by +
+		virtual void addTree(const node<T>* np); // used by +
 	private:
 		virtual void delTree(node<T>* &cur);
 	}; 
@@ -165,7 +164,7 @@ namespace PB_BST
 	//--------------------------------------------------------------------
 	template <class T>
 	bst<T>& bst<T>::operator=(const bst<T>& t)   
-	{
+	{		
 		if(this != &t)
 		{
 			if(!isempty())

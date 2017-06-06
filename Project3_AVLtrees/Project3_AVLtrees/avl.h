@@ -81,19 +81,20 @@ namespace PB_BST
 		bool insert(T d, node<T>* &cur);
 		T popnode(node<T>* &cur);
 		T poplow(node<T>* &cur);
-		T popfirst(const T& d, node<T>* np);		
-		//void deltree(node<T>* &cur) { bst<T>::delTree(cur); };
+		T popfirst(const T& d, node<T>* np);				
+		node<T>* getRoot() const { return bst<T>::root; }
+		node<T>* getRoot() { return bst<T>::root; }
 		void deltree() { bst<T>::delTree(); }
 		~avl() {deltree();}
+		
 	protected:
 		node<T>* rotateRight(node<T> *nodeN);	
 		node<T>* rotateLeft(node<T> *nodeN);
 		node<T>* rotateRightLeft(node<T> *nodeN);
 		node<T>* rotateLeftRight(node<T> *nodeN);
-		node<T>* rebalance(node<T> *&nodeN);
-		int getHeightDifference(const node<T> *const nodeN)const;
-		node<T>* root; // root of this tree
-		node<T>** parentptr; // holding pointer needed by some functions		
+		node<T>* rebalance(node<T> *&nodeN);		
+		int getHeightDifference(const node<T> *const nodeN)const;		
+		void addTree(const node<T>* np);
 	};
 	//--------------------------------------------------------------------
 	// overloaded =
@@ -102,7 +103,7 @@ namespace PB_BST
 	//--------------------------------------------------------------------
 	template<class T>
 	avl<T>& avl<T>::operator=(const avl<T>& t)
-	{
+	{			
 		return (bst<T>::operator=(t));
 	}
 	//--------------------------------------------------------------------
@@ -112,8 +113,23 @@ namespace PB_BST
 	//--------------------------------------------------------------------
 	template<class T>
 	avl<T>& avl<T>::operator+=(const avl<T>& t)
+	{			
+		node<T>* temp = t.getRoot();
+		addTree(temp);		
+		return (*this);
+	}
+	//--------------------------------------------------------------------
+	// recursively adds in the contents of a second tree
+	//--------------------------------------------------------------------
+	template <class T>
+	void avl<T>::addTree(const node<T>* np)
 	{
-		return (bst<T>::operator+=(t));
+		if (np != nullptr)
+		{
+			addTree(np->left);
+			addTree(np->right);
+			insert(np->value(), bst<T>::root);
+		}
 	}
 	//--------------------------------------------------------------------
 	// Insert new node - triggers rebalance()
@@ -123,11 +139,15 @@ namespace PB_BST
 	template<class T>
 	bool avl<T>::insert(T d, node<T>* &cur)
 	{
-		if (bst<T>::insert(d, cur) == false)
-			return false;
-		else
+		if (bst<T>::insert(d, cur) == true)
+		{
 			rebalance(cur);
-		return true;
+			if (bst<T>::root == nullptr)
+				bst<T>::root = cur;
+			bst<T>::root->setHeight();
+			return true;
+		}
+		return false;
 	}
 	//--------------------------------------------------------------------
 	// Pops and returns target node.
@@ -138,6 +158,7 @@ namespace PB_BST
 		T contents = bst<T>::popNode(&cur);
 		if (cur != nullptr)
 			rebalance(cur);
+		bst<T>::root->setHeight();
 		return contents;
 	}
 	//--------------------------------------------------------------------
@@ -149,6 +170,7 @@ namespace PB_BST
 		T contents = bst<T>::popLow(&cur);
 		if (cur != nullptr)
 			rebalance(cur);
+		bst<T>::root->setHeight();
 		return contents;
 	}
 	//--------------------------------------------------------------------
@@ -159,6 +181,7 @@ namespace PB_BST
 	{
 		T contents = bst<T>::popFirstOf(d, np);
 		rebalance(bst<T>::parentptr);
+		bst<T>::root->setHeight();
 		return contents;
 	}
 	//--------------------------------------------------------------------
@@ -167,14 +190,35 @@ namespace PB_BST
 	//--------------------------------------------------------------------
 	template<class T>
 	node<T>* avl<T>::rotateRight(node<T> *nodeN)
-	{
-		node<T>* nodeO = nodeN->left;
-		nodeN->left = nodeO->right;
-		nodeO->right = nodeN;
+	{		
+		node<T> *child = nodeN->left;
+		node<T> *orphan = nullptr;
+		T value = nodeN->value();
+
+		if (nodeN->left->right != nullptr)
+			orphan = nodeN->left->right;
+		
+		nodeN->setdata(nodeN->left->value());	//N has correct data and child
+		if (child->left != nullptr)
+			nodeN->left = child->left;
+
+		nodeN->right = child;
+		child->setdata(value);	//N->r right now has correct data
+		child->left = nullptr;	//Node already re-parented
+		child->right = orphan;	//Orphan now re-parented.
+				
 		nodeN->setHeight();
-		nodeO->setHeight();
-		root = nodeO;
-		return nodeO;
+		return nodeN;
+
+		/*node<T>* temp = nodeN->left;
+		node<T>* orphan = temp->right;
+		temp->right = nodeN;
+		nodeN->left = orphan;		
+
+		if (bst<T>::root == nodeN)
+			bst<T>::root = temp;
+		bst<T>::root->setHeight();		
+		return temp;*/
 	}
 	//--------------------------------------------------------------------
 	// Rotates (sub)tree left
@@ -182,12 +226,34 @@ namespace PB_BST
 	template<class T>
 	node<T>* avl<T>::rotateLeft(node<T> *nodeN)
 	{
-		node<T>* nodeO = nodeN->right;
-		nodeN->right = nodeO->left ;
-		nodeO->left = nodeN;
+		node<T> *child = nodeN->right;
+		node<T> *orphan = nullptr;
+		T value = nodeN->value();
+
+		if (nodeN->right->left != nullptr)
+			orphan = nodeN->right->left;
+
+		nodeN->setdata(nodeN->right->value());	//N has correct data and child
+		if (child->right != nullptr)
+			nodeN->right = child->right;
+
+		nodeN->left = child;
+		child->setdata(value);	//N->r right now has correct data
+		child->right = nullptr;	//Node already re-parented
+		child->left = orphan;	//Orphan now re-parented.
+
 		nodeN->setHeight();
-		nodeO->setHeight();
-		return nodeO;		
+		return nodeN;
+
+		/*node<T>* temp = nodeN->right;
+		node<T>* orphan = temp->left;
+		temp->left = nodeN;
+		nodeN->right = orphan;		
+
+		if (bst<T>::root == nodeN)
+			bst<T>::root = temp;
+		bst<T>::root->setHeight();		
+		return temp;		*/
 	}
 	//--------------------------------------------------------------------
 	// Rotates (sub)tree Right, then Left
@@ -195,7 +261,7 @@ namespace PB_BST
 	template<class T>
 	node<T>* avl<T>::rotateRightLeft(node<T> *nodeN)
 	{
-		nodeN->right = rotateRight(nodeN);
+		nodeN->right = rotateRight(nodeN->right);
 		return rotateLeft(nodeN);
 	}
 	//--------------------------------------------------------------------
@@ -204,7 +270,7 @@ namespace PB_BST
 	template<class T>
 	node<T>* avl<T>::rotateLeftRight(node<T> *nodeN)
 	{
-		nodeN->left = rotateLeft(nodeN);
+		nodeN->left = rotateLeft(nodeN->left);
 		return rotateRight(nodeN);
 	}
 	//--------------------------------------------------------------------
@@ -212,19 +278,19 @@ namespace PB_BST
 	//--------------------------------------------------------------------
 	template<class T>
 	node<T>* avl<T>::rebalance(node<T> *&nodeN)
-	{
-		nodeN->setHeight();	//Make sure height data is correct before proceding
-		if (getHeightDifference(nodeN) == 2)	//Right imbalance block
+	{		
+		int diff = getHeightDifference(nodeN);	//Cache difference
+		if (diff == 2)	//Right imbalance block
 		{
 			if (getHeightDifference(nodeN->right) < 0)
-				return rotateLeftRight(nodeN);	//Right-Left
+				return rotateRightLeft(nodeN);	//Left-Right				
 			else
 				return rotateLeft(nodeN);		//Right
 		}//end Right Imbalances
-		else if (getHeightDifference(nodeN) == -2)	//Left imbalance
+		else if (diff == -2)	//Left imbalance
 		{
 			if (getHeightDifference(nodeN->left) > 0)
-				return rotateRightLeft(nodeN);	//Left-Right
+				return rotateLeftRight(nodeN);	//Right-Left
 			else
 				return rotateRight(nodeN);		//Left
 		}//end Left Imbalances
@@ -243,26 +309,9 @@ namespace PB_BST
 			else
 				return (nodeN->right->getHeight());
 		else if (nodeN->left != nullptr)
-			return (nodeN->left->getHeight());
+			return (-(nodeN->left->getHeight()));
 		else
 			return 0;
 	}
-	////--------------------------------------------------------------------
-	//// Recursively deletes out the subtree
-	//// (Needed in avl.h, because this function is private in bst::
-	////--------------------------------------------------------------------
-	//template <class T>
-	//void avl<T>::deltree(node<T>*& cur)
-	//{
-	//	if (cur != nullptr)
-	//	{
-	//		delTree(cur->left);
-	//		delTree(cur->right);
-	//		delete cur;
-	//		cur = nullptr;
-	//		if (root != nullptr)
-	//			root->setHeight();
-	//	}
-	//}
 }
 #endif
